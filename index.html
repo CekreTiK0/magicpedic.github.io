@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="icon" type="image/png" href="favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Magic Pedic</title>
+    <title>Magic itp</title>
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -383,6 +383,102 @@
         .toast-message { position: fixed; bottom: 35px; left: 50%; transform: translateX(-50%) scale(0.9); background: var(--toast-bg); backdrop-filter: blur(12px); color: var(--text-secondary); padding: 14px 30px; border-radius: 60px; font-weight: 600; font-size: 1rem; z-index: 10000; opacity: 0; transition: all 0.3s ease; pointer-events: none; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5); border-left: 4px solid var(--border-color); }
         .toast-message.show { opacity: 1; transform: translateX(-50%) scale(1); }
 
+        /* ===== СЛАЙДЕР ===== */
+        .slider-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 400px;
+            margin: 30px auto;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid var(--border-color);
+        }
+
+        .slider-wrapper {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .slider-slide {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .slider-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: fill;
+            display: block;
+        }
+
+        .slider-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            border: none;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            z-index: 10;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .slider-btn:hover {
+            background: rgba(0, 0, 0, 0.9);
+            transform: translateY(-50%) scale(1.1);
+            border-color: #ffffff;
+        }
+
+        .slider-prev {
+            left: 15px;
+        }
+
+        .slider-next {
+            right: 15px;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .slider-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.6);
+        }
+
+        .slider-dot.active {
+            background: #ffffff;
+            border-color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+        }
+
+        .slider-dot:hover {
+            background: rgba(255, 255, 255, 0.8);
+        }
+
         @media (max-width: 768px) {
             .header { padding: 10px 15px; flex-wrap: wrap; }
             .header h1 { font-size: 1.3rem; order: 1; width: 100%; text-align: center; margin: 5px 0; }
@@ -457,6 +553,9 @@
             .toast-message { padding: 10px 20px; font-size: 0.8rem; bottom: 20px; }
             .friend-action-btn { padding: 6px 15px; font-size: 0.75rem; }
             .nickname-change-info { font-size: 0.7rem; }
+            .slider-container { height: 250px; border-radius: 15px; }
+            .slider-btn { width: 35px; height: 35px; font-size: 1rem; }
+            .slider-dot { width: 8px; height: 8px; }
         }
 
         @media (max-width: 380px) {
@@ -474,8 +573,8 @@
 <body>
 
     <header class="header">
-        <div class="logo-left" id="homeLink"><i class="fas fa-crown"></i> MagicPedicTeam</div>
-        <h1>Magic Pedic</h1>
+        <div class="logo-left" id="homeLink"><i class="fas fa-crown"></i> MagicITPTeam</div>
+        <h1>Magic itp</h1>
         <div class="nav-links">
             <div class="nav-link" id="notificationsBtn" style="position:relative;">
                 <i class="fas fa-bell"></i> Уведомления
@@ -521,7 +620,7 @@
 
     <div class="footer-bar">
         <div class="footer-left">
-            <p>© 1488-2026 <span>Magic Pedic Team</span> | <span id="currentDate"></span> | Все права защищены.</p>
+            <p>© 1488-2026 <span>Magic itp Team</span> | <span id="currentDate"></span> | Все права защищены.</p>
         </div>
         <button class="footer-btn" id="footerAboutBtn"><i class="fas fa-users"></i> О нас</button>
     </div>
@@ -1409,14 +1508,14 @@
         }
 
         const GALLERY_IMAGES = [
-            { id: 1, title: 'Roronoa Zoro', desc: 'Тот, что владеет тремя мечами..', imageUrl: 'gallery/Roronoa-Zoro.jfif', icon: 'fa-image', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' },
-            { id: 2, title: 'DIO', desc: 'Он лишь хотел уничтожить семейное древо Джостаров. Но ничего не вышло..', imageUrl: 'gallery/DIO-Brando.jfif', icon: 'fa-image', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' },
-            { id: 3, title: 'THUKUNA?!', desc: 'Thukuna-Thukuna! M-m-m... Thukuna... :3', imageUrl: 'gallery/Thukuna.jfif', icon: 'fa-image', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' },
-            { id: 4, title: 'Supra. Yolooo', desc: 'ITS A SUPRA!!', imageUrl: 'gallery/Supra.jfif', icon: 'fa-fire', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' },
-            { id: 5, title: 'Крузак Двухсотый', desc: 'Черная легенда улиц. Его все боялись.', imageUrl: 'gallery/Crusak.jfif', icon: 'fa-image', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' },
-            { id: 6, title: 'Мемчик номер 1', desc: 'Рандомный мемчик, а че б и нет?)', imageUrl: 'gallery/Meme1.jfif', icon: 'fa-image', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' },
-            { id: 7, title: 'Мемчик номер 2', desc: 'Ещё одна смешнявка, йоу)', imageUrl: 'gallery/Meme2.jfif', icon: 'fa-image', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' },
-            { id: 8, title: 'Burn', desc: 'Just a Burn, man.', imageUrl: 'gallery/burn.jfif', icon: 'fa-image', isDefault: true, author: 'Magic Pedic Team', date: '2026-05-21' }
+            { id: 1, title: 'Roronoa Zoro', desc: 'Тот, что владеет тремя мечами..', imageUrl: 'gallery/Roronoa-Zoro.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' },
+            { id: 2, title: 'DIO', desc: 'Он лишь хотел уничтожить семейное древо Джостаров. Но ничего не вышло..', imageUrl: 'gallery/DIO-Brando.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' },
+            { id: 3, title: 'THUKUNA?!', desc: 'Thukuna-Thukuna! M-m-m... Thukuna... :3', imageUrl: 'gallery/Thukuna.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' },
+            { id: 4, title: 'Supra. Yolooo', desc: 'ITS A SUPRA!!', imageUrl: 'gallery/Supra.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' },
+            { id: 5, title: 'Крузак Двухсотый', desc: 'Черная легенда улиц. Его все боялись.', imageUrl: 'gallery/Crusak.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' },
+            { id: 6, title: 'Мемчик номер 1', desc: 'Рандомный мемчик, а че б и нет?)', imageUrl: 'gallery/Meme1.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' },
+            { id: 7, title: 'Мемчик номер 2', desc: 'Ещё одна смешнявка, йоу)', imageUrl: 'gallery/Meme2.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' },
+            { id: 8, title: 'Burn', desc: 'Just a Burn, man.', imageUrl: 'gallery/burn.jfif', icon: 'fa-image', isDefault: true, author: 'Magic itp Team', date: '2026-05-21' }
         ];
 
         let galleryCache = null;
@@ -1714,7 +1813,7 @@
                         <i class="fas fa-images"></i>
                     </div>
                     <div class="gallery-cover-overlay">
-                        <h2><i class="fas fa-camera-retro"></i> Альбом Magic Pedic</h2>
+                        <h2><i class="fas fa-camera-retro"></i> Альбом Magic itp</h2>
                         <p>Нажмите, чтобы открыть альбом</p>
                     </div>
                 </div>
@@ -2894,7 +2993,7 @@
             
             if (!currentUser) {
                 return '<div class="card"><h2><i class="fas fa-user-circle"></i> Личный кабинет</h2>' +
-                    '<p>Войдите или зарегистрируйтесь, чтобы получить доступ к личному кабинету Magic Pedic.</p>' +
+                    '<p>Войдите или зарегистрируйтесь, чтобы получить доступ к личному кабинету Magic itp.</p>' +
                     '<div class="choice-buttons">' +
                     '<button class="choice-btn" id="showLoginBtn"><i class="fas fa-sign-in-alt"></i> Войти</button>' +
                     '<button class="choice-btn blue" id="showRegBtn"><i class="fas fa-user-plus"></i> Регистрация</button>' +
@@ -2940,7 +3039,27 @@
 
         function renderMainPage() {
             return '<div class="card"><h2><i class="fas fa-hand-peace"></i> Добро пожаловать!</h2>' +
-                '<p>Приветствуем вас на главной страницы "Magic Pedic"! На данный момент, мы находимся на стадии разработки. Если есть какие-то вопросы, обращаться ко Владельцу! <strong>Заодно, оформите подписку на мой ТГК. И поставьте лайк сайту.</strong><br>Сделайте правильный выбор. Надеюсь, он вам понравится.</p>' +
+                '<p>Приветствуем вас на главной страницы "Magic itp"! На данный момент, мы находимся на стадии разработки. Если есть какие-то вопросы, обращаться ко Владельцу! <strong>Заодно, оформите подписку на мой ТГК. И поставьте лайк сайту.</strong><br>Сделайте правильный выбор. Надеюсь, он вам понравится.</p>' +
+                '<div class="slider-container" id="mainSlider">' +
+                '    <div class="slider-wrapper" id="sliderWrapper">' +
+                '        <div class="slider-slide"><img src="slider/slider1.jpg" alt="Слайд 1"></div>' +
+                '        <div class="slider-slide"><img src="slider/slider2.jpg" alt="Слайд 2"></div>' +
+                '        <div class="slider-slide"><img src="slider/slider3.jpg" alt="Слайд 3"></div>' +
+                '        <div class="slider-slide"><img src="slider/slider4.jpg" alt="Слайд 4"></div>' +
+                '        <div class="slider-slide"><img src="slider/slider5.jpg" alt="Слайд 5"></div>' +
+                '        <div class="slider-slide"><img src="slider/slider6.jpg" alt="Слайд 6"></div>' +
+                '    </div>' +
+                '    <button class="slider-btn slider-prev" id="sliderPrev"><i class="fas fa-chevron-left"></i></button>' +
+                '    <button class="slider-btn slider-next" id="sliderNext"><i class="fas fa-chevron-right"></i></button>' +
+                '    <div class="slider-dots" id="sliderDots">' +
+                '        <span class="slider-dot active" data-index="0"></span>' +
+                '        <span class="slider-dot" data-index="1"></span>' +
+                '        <span class="slider-dot" data-index="2"></span>' +
+                '        <span class="slider-dot" data-index="3"></span>' +
+                '        <span class="slider-dot" data-index="4"></span>' +
+                '        <span class="slider-dot" data-index="5"></span>' +
+                '    </div>' +
+                '</div>' +
                 '<div class="choice-buttons">' +
                 '<button class="choice-btn" id="goToHellBtn"><i class="fas fa-skull"></i> Свино-девочки</button>' +
                 '<button class="choice-btn blue" id="goToHeavenBtn"><i class="fas fa-dove"></i> Баунти</button>' +
@@ -2981,7 +3100,7 @@
         }
 
         function renderGalleryPage() {
-            return '<div class="card"><h2><i class="fas fa-images"></i> Галерея Magic Pedic</h2>' +
+            return '<div class="card"><h2><i class="fas fa-images"></i> Галерея Magic itp</h2>' +
                 '<p>Коллекция эксклюзивных артов от нашей команды. Наслаждайтесь просмотром!</p>' +
                 '<div id="galleryContent"></div></div>';
         }
@@ -3058,7 +3177,7 @@
             currentPage = page;
             let htmlContent = '';
             
-            if (page === 'main') { htmlContent = renderMainPage(); document.title = 'Magic Pedic | Главная'; }
+            if (page === 'main') { htmlContent = renderMainPage(); document.title = 'Magic itp | Главная'; }
             else if (page === 'hell') { htmlContent = renderHellPage(); document.title = 'Свино-девочки ждут'; }
             else if (page === 'heaven') { htmlContent = renderHeavenPage(); document.title = 'Шоколадка баунти'; }
             else if (page === 'about') { htmlContent = renderAboutPage(); document.title = 'О создателях'; }
@@ -3089,8 +3208,93 @@
                 setTimeout(function() {
                     attachEventListeners();
                     if (page === 'gallery') renderGalleryPageContent();
+                    if (page === 'main') initSlider();
                 }, 50);
             }
+        }
+
+        // ===== СЛАЙДЕР =====
+        let currentSlide = 0;
+        let totalSlides = 6;
+        let sliderInterval = null;
+        let isSliderTransitioning = false;
+
+        function initSlider() {
+            const wrapper = document.getElementById('sliderWrapper');
+            const dots = document.querySelectorAll('#sliderDots .slider-dot');
+            const prevBtn = document.getElementById('sliderPrev');
+            const nextBtn = document.getElementById('sliderNext');
+
+            if (!wrapper || !dots.length) return;
+
+            function goToSlide(index) {
+                if (isSliderTransitioning) return;
+                isSliderTransitioning = true;
+                
+                if (index < 0) index = totalSlides - 1;
+                if (index >= totalSlides) index = 0;
+                currentSlide = index;
+                wrapper.style.transform = `translateX(-${currentSlide * 100}%)`;
+                dots.forEach(function(dot, i) {
+                    if (i === currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+                
+                setTimeout(function() {
+                    isSliderTransitioning = false;
+                }, 500);
+            }
+
+            function nextSlide() {
+                if (!isSliderTransitioning) {
+                    goToSlide(currentSlide + 1);
+                }
+            }
+
+            function prevSlide() {
+                if (!isSliderTransitioning) {
+                    goToSlide(currentSlide - 1);
+                }
+            }
+
+            if (prevBtn) prevBtn.addEventListener('click', function() { 
+                prevSlide(); 
+                resetSliderTimer(); 
+            });
+            if (nextBtn) nextBtn.addEventListener('click', function() { 
+                nextSlide(); 
+                resetSliderTimer(); 
+            });
+
+            dots.forEach(function(dot) {
+                dot.addEventListener('click', function() {
+                    if (!isSliderTransitioning) {
+                        const index = parseInt(this.getAttribute('data-index'));
+                        goToSlide(index);
+                        resetSliderTimer();
+                    }
+                });
+            });
+
+            function startSliderTimer() {
+                if (sliderInterval) clearInterval(sliderInterval);
+                sliderInterval = setInterval(function() {
+                    if (!isSliderTransitioning) {
+                        goToSlide(currentSlide + 1);
+                    }
+                }, 4000);
+            }
+
+            function resetSliderTimer() {
+                if (sliderInterval) clearInterval(sliderInterval);
+                startSliderTimer();
+            }
+
+            goToSlide(0);
+            startSliderTimer();
         }
 
         document.getElementById('footerAboutBtn').addEventListener('click', function() {
@@ -3166,6 +3370,10 @@
             navigateTo(pageFromURL, false);
             
             startPetals();
+            
+            setTimeout(function() {
+                initSlider();
+            }, 100);
         }
 
         init();
