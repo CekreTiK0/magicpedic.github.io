@@ -945,28 +945,21 @@
 
         async function addFriend(friendEmail) {
             if (!currentUser) return false;
-            
             if (currentUser.email === friendEmail) {
                 showToast('❌ Нельзя добавить себя в друзья', 3000);
                 return false;
             }
-            
             try {
                 const userResult = await api.getUserByEmail(friendEmail);
                 if (!userResult.user) {
                     showToast('❌ Пользователь не найден', 3000);
                     return false;
                 }
-                
-                await api.addFriend(userResult.user.id);
-                
-                const friendName = userResult.user.nickname || userResult.user.username;
-                showToast('✅ ' + friendName + ' добавлен в друзья!', 3000);
-                addNotification('👥 Друзья', 'Вы добавили в друзья: ' + friendName);
-                
+                await api.request('POST', '/friends/request', { friendId: userResult.user.id });
+                showToast('✅ Заявка отправлена!', 3000);
                 return true;
             } catch (err) {
-                showToast('❌ ' + (err.message || 'Ошибка при добавлении в друзья'), 3000);
+                showToast('❌ ' + (err.message || 'Ошибка'), 3000);
                 return false;
             }
         }
@@ -1259,7 +1252,7 @@
             const bgMusic = document.getElementById('bgMusic');
             if (!bgMusic) return;
             
-            bgMusic.volume = 0.5;
+            bgMusic.volume = 0.25;
             bgMusic.play().then(function() {
                 if (!musicStarted) musicStarted = true;
                 setPlayingState(true);
@@ -1353,7 +1346,7 @@
             const seekBar = document.getElementById('seekBar');
             
             if (bgMusic) {
-                bgMusic.volume = 0.5;
+                bgMusic.volume = 0.25;
                 if (volumeSlider) volumeSlider.value = 0.5;
                 
                 bgMusic.addEventListener('loadedmetadata', function() {
@@ -1526,13 +1519,13 @@
                 if (result.images && result.images.length > 0) {
                     galleryCache = result.images;
                     return result.images;
+                } else {
+                    return GALLERY_IMAGES;
                 }
             } catch (err) {
-                console.warn('Не удалось загрузить галерею с сервера, использую кэш');
+                console.warn('Не удалось загрузить галерею с сервера');
+                return GALLERY_IMAGES;
             }
-            
-            if (galleryCache) return galleryCache;
-            return GALLERY_IMAGES;
         }
 
         async function addImageToGallery(imageData) {
@@ -3026,7 +3019,7 @@
                 (currentUser.birthday ? '<p><span class="info-icon"><i class="fas fa-birthday-cake"></i></span> <strong>День рождения:</strong> ' + currentUser.birthday + '</p>' : '') +
                 (currentUser.status ? '<p><span class="info-icon"><i class="fas fa-comment"></i></span> <strong>Статус:</strong> "' + currentUser.status + '"</p>' : '') +
                 (currentUser.description ? '<p><span class="info-icon"><i class="fas fa-info-circle"></i></span> ' + currentUser.description + '</p>' : '') +
-                '<p style="font-size:0.9rem;color:#888;margin-top:10px;"><span class="info-icon"><i class="fas fa-clock"></i></span> Последний вход: ' + new Date(currentUser.loginTime).toLocaleString('ru-RU') + '</p>' +
+                '<p style="font-size:0.9rem;color:#888;margin-top:10px;"><span class="info-icon"><i class="fas fa-clock"></i></span> Последний вход: ' + (currentUser.last_login ? new Date(currentUser.last_login + 'Z').toLocaleString('ru-RU') : 'Неизвестно') + '</p>' +
                 (!canChange && timeInfo ? '<p style="font-size:0.8rem;color:#f44336;margin-top:5px;"><span class="info-icon"><i class="fas fa-lock"></i></span> Смена ника доступна: ' + timeInfo.nextChangeDate + '</p>' : '') +
                 (canChange ? '<p style="font-size:0.8rem;color:#4CAF50;margin-top:5px;"><span class="info-icon"><i class="fas fa-unlock"></i></span> Можно изменить видимый ник</p>' : '') +
                 '</div></div>' +
